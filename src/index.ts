@@ -8,10 +8,11 @@ program
     .version('0.1.0')
     .description('A CLI for starting the messages file watcher')
     .requiredOption('-p, --path <path>', 'Path to watch')
-    .option('-o, --output <output>', 'Output directory', 'i18n/messages')
-    .option('-n, --namespace <namespace>', 'Namespace mapping in JSON format', '{"locales/**/*":"common","app/**/*":"page","components/**/*":"component"}')
-    .option('-b, --base-path <basePath>', 'Base path for the watcher', 'src')
-    .option('-c, --config-file <configFile>', 'Configuration file for the watcher')
+    .option('-o, --output <output>', 'Output directory')
+    .option('-n, --namespace <namespace>', 'Namespace mapping in JSON format')
+    .option('-b, --base-path <basePath>', 'Base path for the watcher')
+    .option('-c, --config-file <configFile>', 'File matching regular for message file')
+    .option('-m, --matcher <matcher>', '')
     .action((options) => {
         const namespace = JSON.parse(options.namespace);
         startMessagesFileWatcher(options.path, {
@@ -19,13 +20,14 @@ program
             configFile: options.configFile,
             namespace,
             onChunk: combineMessages,
-            output: options.output
+            output: options.output,
+            matcher: options.matcher,
         });
     });
 
 program.parse(process.argv);
 
-export const startWatcher = (path:string,options?:Omit<MessageFileWatcherOptions, 'onChunk'>) => {
+export const startWatcher = (path: string, options?: Omit<MessageFileWatcherOptions, 'onChunk'>) => {
     startMessagesFileWatcher(path, {
         ...options,
         onChunk: combineMessages,

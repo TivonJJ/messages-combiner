@@ -3,14 +3,15 @@ import micromatch from "micromatch";
 import {mkdirpSync} from "mkdirp";
 import fs from "fs/promises";
 
-export interface CombineOptions{
+export interface CombineOptions {
     namespace?: Record<string, string>
     dir: string
     output?: string
 }
+
 export function combineMessages(map: Record<string, object>, options: CombineOptions) {
-    const { namespace={}, output=nodepath.join(options.dir,'/messages') } = options;
-    const messages:Record<string, Record<string, any>> = {};
+    const {namespace = {}, output = nodepath.join(options.dir, '/messages')} = options;
+    const messages: Record<string, Record<string, any>> = {};
     const files = Object.keys(map);
     files.forEach(path => {
         const locale = map[path];
@@ -41,7 +42,7 @@ export function combineMessages(map: Record<string, object>, options: CombineOpt
     // Write each language's messages to a separate file
     Object.keys(messages).forEach(language => {
         const filePath = nodepath.join(
-            nodepath.isAbsolute(output)?output:nodepath.join(options.dir,output),
+            nodepath.isAbsolute(output) ? output : nodepath.join(options.dir, output),
             `${language}.json`
         );
         mkdirpSync(nodepath.dirname(filePath));
