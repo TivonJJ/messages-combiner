@@ -39,6 +39,15 @@ export function combineMessages(map: Record<string, object>, options: CombineOpt
         }
     });
 
+    // Sort the keys of each language's messages
+    Object.keys(messages).forEach(language => {
+        const sortedMessages:Record<string, Record<string, any>> = {};
+        Object.keys(messages[language]).sort().forEach(key => {
+            sortedMessages[key] = messages[language][key];
+        });
+        messages[language] = sortedMessages;
+    });
+
     // Write each language's messages to a separate file
     Object.keys(messages).forEach(language => {
         const filePath = nodepath.join(

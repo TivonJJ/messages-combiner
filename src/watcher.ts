@@ -47,7 +47,6 @@ export interface MessageFileWatcherOptions {
 
 export function startMessagesFileWatcher(path: string, {onChunk, matcher, ...options}: MessageFileWatcherOptions = {}) {
     const LocalMap: Record<string, object> = {}
-    const dir = nodepath.join(path, options.basePath || '');
     let {configFile = nodepath.join(path, '.mcombiner.json')} = options;
     if (!nodepath.isAbsolute(configFile)) {
         configFile = nodepath.join(path, configFile);
@@ -61,7 +60,9 @@ export function startMessagesFileWatcher(path: string, {onChunk, matcher, ...opt
             console.error(`Failed to read or parse config file: ${options.configFile}`, err);
         }
     }
+    const dir = nodepath.join(path, options.basePath || '');
     const mergeOption: CombineOptions = {...options, dir};
+    console.log('Watch messages dir:', dir);
     startWatch(dir, {
         matcher,
         onChange: (path, action) => {
