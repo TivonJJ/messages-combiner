@@ -1,6 +1,6 @@
 {
   "name": "messages-combiner",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "",
   "main": "dist/cjs/index.js",
   "types": "dist/cjs/index.d.ts",
@@ -9,6 +9,9 @@
     "build": "father build",
     "build:deps": "father prebundle",
     "prepublishOnly": "father doctor && npm run build"
+  },
+  "bin": {
+    "messages-combiner": "./dist/cjs/cli.js"
   },
   "keywords": [],
   "authors": [],
