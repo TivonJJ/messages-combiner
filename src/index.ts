@@ -1,8 +1,15 @@
-import {MessageFileWatcherOptions, startMessagesFileWatcher} from "./watcher";
-import {combineMessages} from "./combiner";
+import { combineMessages } from "./combiner";
+import {getAllMessages, MessageFileWatcherOptions, startMessagesFileWatcher} from "./watcher";
 
-export const startWatcher = (path: string, options?: Omit<MessageFileWatcherOptions, 'onChunk'>) => {
+export const combineWatcher = (path: string, options?: Omit<MessageFileWatcherOptions, 'onChunk'>) => {
     startMessagesFileWatcher(path, {
+        ...options,
+        onChunk: combineMessages,
+    })
+};
+
+export const combine = (path: string, options?: Omit<MessageFileWatcherOptions, 'onChunk'>) => {
+    getAllMessages(path, {
         ...options,
         onChunk: combineMessages,
     })

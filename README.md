@@ -12,7 +12,7 @@ For more options, please refer to the Options description below.
 
 #### Example 2: Execute via Programmatic API
 ```ts
-import { startWatcher } from 'messages-combiner';
+import { combineWatcher,combine } from 'messages-combiner';
 
 startWatcher('/path/to/your/project', {
     basePath:'src',
@@ -25,6 +25,9 @@ startWatcher('/path/to/your/project', {
     // you can also use config file to define options, The default is mcombiner.json relative your path argument
     configFile:'pathto/my_mcombiner.json',
 });
+combine('/path/to/your/project', {
+    // same as above
+})
 ```
 
 ## Options
@@ -32,6 +35,7 @@ startWatcher('/path/to/your/project', {
 ### Options:
 
 - **-p, --path <path>**: Path to watch. This is a required option that specifies the directory where your message files are located.
+- **-w, --watch <watch>**: Watch the file changes. default is true.
 - **-o, --output <output>**: Output directory. This optional parameter specifies the directory where the combined message files will be saved. Default is `i18n/messages`.
 - **-n, --namespace <namespace>**: Namespace mapping in JSON format. This optional parameter allows you to define custom namespaces to organize your message files.
 - **-b, --base-path <basePath>**: Base path for the watcher. This optional parameter specifies the base path for the watcher.

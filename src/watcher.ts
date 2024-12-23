@@ -6,17 +6,16 @@ import fs from 'fs';
 export type Action = 'A' | 'U' | 'D';
 
 export function startWatch(dir: string, options: {
+    matcher: RegExp;
     onChange?: (path: string, action: Action) => void;
     onError?: (err: unknown) => void;
-    matcher?: RegExp;
-} = {}): FSWatcher {
+}): FSWatcher {
     const watcher = chokidar.watch(dir, {
         awaitWriteFinish: true,
     });
-    const {matcher = /locales\/.*\.json$/} = options;
 
     function emitChange(path: string, action: Action) {
-        if (matcher.test(path)) {
+        if (options.matcher.test(path)) {
             options.onChange?.(path, action);
         }
     }
@@ -45,9 +44,11 @@ export interface MessageFileWatcherOptions {
     matcher?: RegExp
 }
 
-export function startMessagesFileWatcher(path: string, {onChunk, matcher, ...options}: MessageFileWatcherOptions = {}) {
-    const LocalMap: Record<string, object> = {}
-    let {configFile = nodepath.join(path, '.mcombiner.json')} = options;
+function getOptions(path: string, options: MessageFileWatcherOptions = {}): MessageFileWatcherOptions & {
+    matcher: RegExp;
+    dir: string;
+} {
+    let {configFile = nodepath.join(path, '.mcombiner.json'), matcher = /locales\/.*\.json$/} = options;
     if (!nodepath.isAbsolute(configFile)) {
         configFile = nodepath.join(path, configFile);
     }
@@ -61,7 +62,13 @@ export function startMessagesFileWatcher(path: string, {onChunk, matcher, ...opt
         }
     }
     const dir = nodepath.join(path, options.basePath || '');
-    const mergeOption: CombineOptions = {...options, dir};
+    return {matcher, ...options, dir};
+}
+
+export function startMessagesFileWatcher(path: string, options: MessageFileWatcherOptions = {}) {
+    const LocalMap: Record<string, object> = {}
+    const {onChunk, matcher, ...mergeOption} = getOptions(path, options);
+    const {dir} = mergeOption;
     console.log('Watch messages dir:', dir);
     startWatch(dir, {
         matcher,
@@ -76,6 +83,31 @@ export function startMessagesFileWatcher(path: string, {onChunk, matcher, ...opt
             onChunk?.(LocalMap, mergeOption)
         }
     })
+}
+
+export function getAllMessages(path: string, options: MessageFileWatcherOptions = {}){
+    const LocalMap: Record<string, object> = {}
+    const {onChunk, matcher, ...mergeOption} = getOptions(path, options);
+    const {dir} = mergeOption;
+    console.log('Get messages from dir:', dir);
+    function eachDirs(path:string){
+        const files = fs.readdirSync(path, { withFileTypes: true });
+        files.forEach(file => {
+            if (file.isDirectory()) {
+                const subDir = nodepath.join(path, file.name);
+                eachDirs(subDir);
+            } else {
+                const filePath = nodepath.join(path, file.name);
+                const relativePath = nodepath.join('/', nodepath.relative(dir, filePath));
+                if (matcher.test(relativePath)) {
+                    LocalMap[nodepath.join('/', nodepath.relative(path, relativePath))] = loadMessages(filePath);
+                }
+            }
+        });
+    }
+    eachDirs(dir);
+    onChunk?.(LocalMap, mergeOption);
+    return LocalMap;
 }
 
 function loadMessages(path: string) {
