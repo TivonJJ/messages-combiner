@@ -1,7 +1,6 @@
 import nodepath from "path";
 import micromatch from "micromatch";
-import {mkdirpSync} from "mkdirp";
-import fs from "fs/promises";
+import fs from "fs-extra";
 
 export interface CombineOptions {
     namespace?: Record<string, string>
@@ -49,16 +48,13 @@ export function combineMessages(map: Record<string, object>, options: CombineOpt
     });
 
     // Write each language's messages to a separate file
-    Object.keys(messages).forEach(language => {
+    Object.keys(messages).forEach(async (language) => {
         const filePath = nodepath.join(
             nodepath.isAbsolute(output) ? output : nodepath.join(options.dir, output),
             `${language}.json`
         );
-        mkdirpSync(nodepath.dirname(filePath));
-        fs.writeFile(filePath, JSON.stringify(messages[language], null, 2), 'utf-8').catch(err => {
-            console.error(err);
-        });
+        await fs.mkdirp(nodepath.dirname(filePath));
+        await fs.writeFile(filePath, JSON.stringify(messages[language], null, 2), 'utf-8')
     });
-
     return messages;
 }

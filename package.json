@@ -1,6 +1,6 @@
 {
   "name": "messages-combiner",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "",
   "main": "dist/cjs/index.js",
   "types": "dist/cjs/index.d.ts",
@@ -11,7 +11,8 @@
     "prepublishOnly": "father doctor && npm run build"
   },
   "bin": {
-    "messages-combiner": "./dist/cjs/cli.js"
+    "messages-combiner": "./dist/cjs/cli.js",
+    "mc": "./dist/cjs/cli.js"
   },
   "keywords": [],
   "authors": [],
@@ -24,12 +25,14 @@
     "access": "public"
   },
   "devDependencies": {
+    "@types/fs-extra": "^11.0.4",
     "@types/micromatch": "^4.0.9",
     "father": "^4.5.1"
   },
   "dependencies": {
     "chokidar": "^4.0.3",
     "commander": "^12.1.0",
+    "fs-extra": "^11.2.0",
     "glob": "^11.0.0",
     "micromatch": "^4.0.8",
     "mkdirp": "^3.0.1"
