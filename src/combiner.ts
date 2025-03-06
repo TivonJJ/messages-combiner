@@ -49,10 +49,10 @@ export function combineMessages(map: Record<string, object>, options: CombineOpt
 
     // Write each language's messages to a separate file
     Object.keys(messages).forEach(async (language) => {
-        const filePath = nodepath.join(
+        const filePath = nodepath.normalize(nodepath.join(
             nodepath.isAbsolute(output) ? output : nodepath.join(options.dir, output),
             `${language}.json`
-        );
+        ));
         await fs.mkdirp(nodepath.dirname(filePath));
         await fs.writeFile(filePath, JSON.stringify(messages[language], null, 2), 'utf-8')
     });

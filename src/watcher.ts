@@ -15,6 +15,7 @@ export function startWatch(dir: string, options: {
     });
 
     function emitChange(path: string, action: Action) {
+        path = path.split(nodepath.sep).join('/')
         if (options.matcher.test(path)) {
             options.onChange?.(path, action);
         }
@@ -52,7 +53,7 @@ function getOptions(path: string, options: MessageFileWatcherOptions = {}): Mess
     if (!nodepath.isAbsolute(configFile)) {
         configFile = nodepath.join(path, configFile);
     }
-    if (configFile) {
+    if (configFile && fs.existsSync(configFile)) {
         try {
             const configContent = fs.readFileSync(configFile, 'utf-8');
             const config = JSON.parse(configContent);
@@ -69,7 +70,7 @@ export function startMessagesFileWatcher(path: string, options: MessageFileWatch
     const LocalMap: Record<string, object> = {}
     const {onChunk, matcher, ...mergeOption} = getOptions(path, options);
     const {dir} = mergeOption;
-    console.log('Watch messages dir:', dir);
+    console.log('Watch messages dir:', nodepath.resolve(dir));
     startWatch(dir, {
         matcher,
         onChange: (path, action) => {
