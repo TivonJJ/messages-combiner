@@ -1,3 +1,4 @@
 {
-    "name":"My name is mc."
+    "appName":"Test",
+    "appVersion": "V1.0"
 }

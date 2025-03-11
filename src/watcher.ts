@@ -43,6 +43,8 @@ export interface MessageFileWatcherOptions {
     output?: string
     configFile?: string
     matcher?: RegExp
+    mergeMode?: 'merge' | 'assign'
+    unFlatten?: boolean
 }
 
 function getOptions(path: string, options: MessageFileWatcherOptions = {}): MessageFileWatcherOptions & {

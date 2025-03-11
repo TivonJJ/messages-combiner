@@ -1,11 +1,15 @@
 import nodepath from "path";
 import micromatch from "micromatch";
 import fs from "fs-extra";
+import _ from 'lodash';
+import {unflatten} from 'flat'
 
 export interface CombineOptions {
     namespace?: Record<string, string>
     dir: string
     output?: string
+    mergeMode?: 'merge' | 'assign'
+    unFlatten?: boolean
 }
 
 export function combineMessages(map: Record<string, object>, options: CombineOptions) {
@@ -13,7 +17,7 @@ export function combineMessages(map: Record<string, object>, options: CombineOpt
     const messages: Record<string, Record<string, any>> = {};
     const files = Object.keys(map);
     files.forEach(path => {
-        const locale = map[path];
+        const locale = options.unFlatten ? unflatten(map[path]) : map[path];
         const language = nodepath.basename(path, '.json');
 
         if (!messages[language]) {
@@ -22,25 +26,26 @@ export function combineMessages(map: Record<string, object>, options: CombineOpt
 
         let matched = false;
         const namespaces = Object.keys(namespace);
+        const merge = options.mergeMode === 'merge' ? _.merge : _.assign;
         for (const ns of namespaces) {
             const nsn = namespace[ns];
             if (micromatch.isMatch(path, ns)) {
                 if (!messages[language][nsn]) {
                     messages[language][nsn] = {};
                 }
-                Object.assign(messages[language][nsn], locale);
+                merge(messages[language][nsn], locale);
                 matched = true;
                 break;
             }
         }
         if (!matched) {
-            Object.assign(messages[language], locale);
+            merge(messages[language], locale);
         }
     });
 
     // Sort the keys of each language's messages
     Object.keys(messages).forEach(language => {
-        const sortedMessages:Record<string, Record<string, any>> = {};
+        const sortedMessages: Record<string, Record<string, any>> = {};
         Object.keys(messages[language]).sort().forEach(key => {
             sortedMessages[key] = messages[language][key];
         });
