@@ -1,6 +1,6 @@
 {
   "name": "messages-combiner",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "",
   "main": "dist/cjs/index.js",
   "types": "dist/cjs/index.d.ts",
@@ -33,7 +33,6 @@
   "dependencies": {
     "chokidar": "^4.0.3",
     "commander": "^12.1.0",
-    "flat": "^6.0.1",
     "fs-extra": "^11.2.0",
     "glob": "^11.0.0",
     "lodash": "^4.17.21",

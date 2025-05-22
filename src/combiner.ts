@@ -2,7 +2,7 @@ import nodepath from "path";
 import micromatch from "micromatch";
 import fs from "fs-extra";
 import _ from 'lodash';
-import {unflatten} from 'flat'
+import {unflatten} from './utils/flat'
 
 export interface CombineOptions {
     namespace?: Record<string, string>
